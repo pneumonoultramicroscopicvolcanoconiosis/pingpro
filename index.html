@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PingPro — Know your next class before the bell does</title>
+<meta name="description" content="PingPro shows your current and next class in the Mac menu bar, with a nudge before the bell. Free on the Mac App Store.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+  :root {
+    --paper: #f8f6fc;
+    --paper-raised: #ffffff;
+    --ink: #16131f;
+    --ink-soft: #57516d;
+    --ink-faint: #8a839e;
+    --indigo: #5457e5;
+    --violet: #9645db;
+    --amber: #c9821f;
+    --amber-bg: #fbeed8;
+    --teal: #0d8f7a;
+    --teal-bg: #dcf3ee;
+    --line: #e3e0ed;
+    --line-strong: #cfcadf;
+    --shadow: 0 1px 2px rgba(22,19,31,0.04), 0 12px 32px -16px rgba(22,19,31,0.18);
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 9px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #131120;
+      --paper-raised: #1b1830;
+      --ink: #f3f1fa;
+      --ink-soft: #b6afce;
+      --ink-faint: #837c9c;
+      --indigo: #8082ff;
+      --violet: #c586f5;
+      --amber: #f0b75b;
+      --amber-bg: #3a2c14;
+      --teal: #3ddcc2;
+      --teal-bg: #123028;
+      --line: #2c2846;
+      --line-strong: #3c3760;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 20px 44px -20px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131120;
+    --paper-raised: #1b1830;
+    --ink: #f3f1fa;
+    --ink-soft: #b6afce;
+    --ink-faint: #837c9c;
+    --indigo: #8082ff;
+    --violet: #c586f5;
+    --amber: #f0b75b;
+    --amber-bg: #3a2c14;
+    --teal: #3ddcc2;
+    --teal-bg: #123028;
+    --line: #2c2846;
+    --line-strong: #3c3760;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 20px 44px -20px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  a { color: inherit; }
+
+  h1, h2, h3 {
+    font-family: "Fraunces", ui-serif, Georgia, serif;
+    font-weight: 600;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .mono {
+    font-family: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- header ---------- */
+
+  header {
+    padding: 26px 0 0;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Fraunces", serif;
+    font-weight: 600;
+    font-size: 19px;
+  }
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    box-shadow: 0 2px 8px -2px rgba(84,87,229,0.55);
+  }
+  .brand-mark svg { width: 16px; height: 16px; }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-price {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper-raised);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-price.is-free { color: var(--teal); border-color: var(--teal); }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    padding: 76px 0 64px;
+    display: grid;
+    gap: 44px;
+  }
+  .hero-copy h1 {
+    font-size: clamp(34px, 5.4vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+  .hero-copy h1 em {
+    font-style: italic;
+    color: var(--indigo);
+  }
+  .hero-sub {
+    margin: 20px 0 0;
+    max-width: 46ch;
+    font-size: 17px;
+    color: var(--ink-soft);
+  }
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 13px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    color: #fff;
+    box-shadow: 0 10px 24px -10px rgba(84,87,229,0.55);
+  }
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+  .btn-disabled {
+    background: var(--paper);
+    border-color: var(--line-strong);
+    color: var(--ink-faint);
+    cursor: default;
+  }
+  .hero-note {
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- departure board ---------- */
+
+  .board {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    max-width: 420px;
+  }
+  .board-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .board-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+  .board-title { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+  .board-live {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--amber);
+  }
+  .board-live::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--amber);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .board-body { padding: 18px 16px 16px; }
+  .board-row {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    align-items: baseline;
+    gap: 4px 12px;
+    padding: 12px 0;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: rise 0.5s ease forwards;
+  }
+  .board-row + .board-row { border-top: 1px dashed var(--line); }
+  .board-row:nth-child(1) { animation-delay: 0.05s; }
+  .board-row:nth-child(2) { animation-delay: 0.18s; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  .board-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: var(--ink-faint);
+    align-self: start;
+    padding-top: 3px;
+  }
+  .board-row.is-now .board-label { color: var(--indigo); }
+  .board-subject { font-weight: 600; font-size: 15.5px; }
+  .board-meta { grid-column: 2; font-size: 12.5px; color: var(--ink-soft); }
+  .board-time {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    align-self: start;
+    text-align: right;
+  }
+  .board-time strong { color: var(--amber); font-weight: 600; }
+
+  .board-periods {
+    display: flex;
+    gap: 5px;
+    padding: 4px 16px 16px;
+    flex-wrap: wrap;
+  }
+  .period-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 4px 7px;
+    border-radius: 6px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+  }
+  .period-chip.done { text-decoration: line-through; opacity: 0.5; }
+  .period-chip.active { background: var(--amber-bg); border-color: var(--amber); color: var(--amber); }
+
+  @media (min-width: 720px) {
+    .hero { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
+  }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 56px 0; border-top: 1px solid var(--line); }
+
+  .section-head { max-width: 56ch; margin-bottom: 36px; }
+  .section-head h2 { font-size: clamp(24px, 3.4vw, 30px); margin-top: 10px; }
+  .section-head p { margin: 12px 0 0; color: var(--ink-soft); font-size: 15.5px; }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .feature {
+    background: var(--paper-raised);
+    padding: 24px;
+  }
+  .feature-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--amber-bg);
+    color: var(--amber);
+    margin-bottom: 14px;
+  }
+  .feature h3 { font-family: "IBM Plex Sans", sans-serif; font-size: 15.5px; font-weight: 700; }
+  .feature p { margin: 8px 0 0; font-size: 14px; color: var(--ink-soft); }
+
+  .steps { display: grid; gap: 0; }
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 18px;
+    padding: 20px 0;
+  }
+  .step + .step { border-top: 1px solid var(--line); }
+  .step-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--indigo);
+    padding-top: 2px;
+  }
+  .step h3 { font-family: "IBM Plex Sans", sans-serif; font-size: 15.5px; font-weight: 700; }
+  .step p { margin: 6px 0 0; color: var(--ink-soft); font-size: 14.5px; max-width: 54ch; }
+  .step code {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 13px;
+  }
+
+  /* ---------- pricing ---------- */
+
+  .price-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 36px;
+    display: grid;
+    gap: 22px;
+  }
+  @media (min-width: 620px) {
+    .price-card { grid-template-columns: 1fr auto; align-items: center; }
+  }
+  .price-figure {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .price-figure .amount {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .price-figure .currency {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-faint);
+  }
+  .price-terms { margin: 8px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+  .price-terms li { margin: 3px 0; }
+  .price-terms { padding-left: 18px; }
+
+  /* ---------- iOS card ---------- */
+
+  .ios-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 32px;
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 620px) {
+    .ios-card { grid-template-columns: 1fr auto; align-items: center; }
+  }
+  .free-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--teal);
+    background: var(--teal-bg);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 4px;
+  }
+  .ios-terms { margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--ink-soft); }
+  .ios-terms li { margin: 3px 0; }
+
+  /* ---------- faq ---------- */
+
+  .faq-item + .faq-item { border-top: 1px solid var(--line); }
+  .faq-item { padding: 18px 0; }
+  .faq-item h3 { font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 700; }
+  .faq-item p { margin: 8px 0 0; font-size: 14.5px; color: var(--ink-soft); max-width: 60ch; }
+
+  footer {
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+  footer a { text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .board-row, .board-live::before { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+
+</head>
+<body>
+<header class="wrap">
+  <nav class="nav">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3a5 5 0 0 0-5 5v3.2c0 .7-.24 1.38-.68 1.93L5 15h14l-1.32-1.87a3.2 3.2 0 0 1-.68-1.93V8a5 5 0 0 0-5-5Z" fill="#fff"/>
+          <path d="M9.5 18a2.5 2.5 0 0 0 5 0" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      PingPro
+    </div>
+    <div class="nav-links">
+      <a class="nav-price is-free" href="#ios">iOS — Free</a>
+      <a class="nav-price is-free" href="#buy">Mac — Free</a>
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="hero" style="border-top:none; padding-top: 56px;">
+    <div class="hero-copy">
+      <p class="eyebrow">macOS menu bar · iPhone &amp; iPad</p>
+      <h1>Know your <em>next</em> class<br>before the bell does.</h1>
+      <p class="hero-sub">PingPro reads your real school timetable — two-week rotation, snack and lunch breaks included — so you always know what's now and what's next, with a nudge five minutes before the bell. Free on your Mac's menu bar and free on your iPhone with a Home Screen widget.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://apps.apple.com/ly/app/ping-pro/id6811655016?mt=12">Download for Mac — Free</a>
+        <a class="btn btn-ghost" href="#ios">Free on iOS</a>
+      </div>
+      <p class="hero-note">Free on Mac &amp; iOS · Apple Silicon &amp; Intel · macOS 13 or later</p>
+    </div>
+
+    <div class="board" role="img" aria-label="PingPro menu bar preview showing the current and next lesson">
+      <div class="board-bar">
+        <span class="board-dot"></span>
+        <span class="board-title">PingPro</span>
+        <span class="board-live">LIVE</span>
+      </div>
+      <div class="board-body">
+        <div class="board-row is-now">
+          <span class="board-label">NOW</span>
+          <div>
+            <div class="board-subject">Maths</div>
+            <div class="board-meta">Mr Atray · SS G97</div>
+          </div>
+          <div class="board-time"><strong id="countdown">12m</strong> left</div>
+        </div>
+        <div class="board-row">
+          <span class="board-label">NEXT</span>
+          <div>
+            <div class="board-subject">Snack Break</div>
+            <div class="board-meta">Starts 09:30</div>
+          </div>
+          <div class="board-time">09:30</div>
+        </div>
+      </div>
+      <div class="board-periods">
+        <span class="period-chip done">HR</span>
+        <span class="period-chip done">L1</span>
+        <span class="period-chip active">L2</span>
+        <span class="period-chip">SN</span>
+        <span class="period-chip">L3</span>
+        <span class="period-chip">L4</span>
+        <span class="period-chip">L5</span>
+        <span class="period-chip">LN</span>
+        <span class="period-chip">L6</span>
+        <span class="period-chip">L7</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="section-head">
+      <p class="eyebrow">What it does</p>
+      <h2>Built around the actual school day.</h2>
+      <p>Not a generic calendar app — PingPro understands periods, breaks, and the two-week timetable rotation your school already runs on.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3a5 5 0 0 0-5 5v3.2c0 .7-.24 1.38-.68 1.93L5 15h14l-1.32-1.87a3.2 3.2 0 0 1-.68-1.93V8a5 5 0 0 0-5-5Z" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 18a2.5 2.5 0 0 0 5 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Notified before the bell</h3>
+        <p>A quiet alert five minutes before every period ends — class or break — telling you exactly what's coming next.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 9.5h16M8 3v3M16 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Handles Week 1 / Week 2</h3>
+        <p>Set it once and PingPro tracks the rotation itself — no relabeling your schedule every other Monday.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 4v10m0 0-3.5-3.5M12 14l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Any timetable, via CSV</h3>
+        <p>Import your own school's schedule as a spreadsheet — periods, teachers, rooms, both weeks. Export it back any time.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Or type it in by hand</h3>
+        <p>No spreadsheet? A built-in editor lets you fill in your timetable row by row, right inside the app.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Always running</h3>
+        <p>Launches at login and lives quietly in the menu bar — no dock icon, no window to leave open.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="whats-new">
+    <div class="section-head">
+      <p class="eyebrow">What's new</p>
+      <h2>Latest: version 1.1.1</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <h3>1.1.1 <span class="mono" style="font-weight:500;color:var(--ink-faint);font-size:13px;">· current</span></h3>
+        <p>App Store screenshots added to the listing, plus minor under-the-hood fixes.</p>
+      </div>
+      <div class="faq-item">
+        <h3>1.1</h3>
+        <p>New built-in timetable editor — type your schedule in by hand, no spreadsheet needed. PingPro can now also launch automatically when you log in.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="section-head">
+      <p class="eyebrow">Setup</p>
+      <h2>Three steps, then forget about it.</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num mono">01</span>
+        <div>
+          <h3>Get it on the Mac App Store</h3>
+          <p><a href="https://apps.apple.com/ly/app/ping-pro/id6811655016?mt=12" style="color: var(--indigo); text-decoration: underline;">Download PingPro</a> — installs and updates itself automatically, like any Mac App Store app.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num mono">02</span>
+        <div>
+          <h3>Import your timetable</h3>
+          <p>Click the menu bar icon → <code>Import CSV…</code> and point it at your school's schedule. A template is included.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num mono">03</span>
+        <div>
+          <h3>Allow notifications</h3>
+          <p>Say yes when macOS asks. From then on, PingPro tells you what's next — you don't have to open it again.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="buy">
+    <div class="section-head">
+      <p class="eyebrow">Pricing · Mac</p>
+      <h2>Free. Use it every school day.</h2>
+      <p>PingPro for Mac doesn't cost anything — every feature, no catch. If it saves you from missing a class, a small tip helps keep it maintained.</p>
+    </div>
+    <div class="ios-card">
+      <div>
+        <span class="free-badge">FREE</span>
+        <ul class="ios-terms">
+          <li>No subscription, no account required</li>
+          <li>Free updates for the life of the app</li>
+          <li>Works on any Mac, Apple Silicon or Intel</li>
+        </ul>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; justify-self:start;">
+        <a class="btn btn-primary" href="https://apps.apple.com/ly/app/ping-pro/id6811655016?mt=12">View on the Mac App Store</a>
+        <a class="btn btn-ghost" href="https://pay.ziina.com/0005935/dvCfID3ry?source=app" id="tip-button" data-fallback="https://pay.ziina.com/0005935/dvCfID3ry?source=app" style="font-size: 13px; padding: 9px 16px;">Leave a tip — 7.99 AED</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="ios">
+    <div class="section-head">
+      <p class="eyebrow">Pricing · iPhone &amp; iPad</p>
+      <h2>Free, with a Home Screen widget.</h2>
+      <p>The iOS app is completely free — same Now/Next tracking as the Mac app, plus a widget so you don't even have to open it.</p>
+    </div>
+    <div class="ios-card">
+      <div>
+        <span class="free-badge">FREE</span>
+        <ul class="ios-terms">
+          <li>No account, no in-app purchases</li>
+          <li>Home Screen widget shows Now / Next at a glance</li>
+          <li>Import your timetable via CSV, same as the Mac app</li>
+        </ul>
+      </div>
+      <a class="btn btn-disabled" style="justify-self: start;">Coming Soon</a>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="section-head">
+      <p class="eyebrow">Questions</p>
+      <h2>Before you install.</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <h3>Is the Mac app really free?</h3>
+        <p>Yes — every feature, no trial period, no locked "pro" tier. The tip option in the pricing section above is optional and doesn't unlock anything extra.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is there an iOS app?</h3>
+        <p>Yes — free on iPhone and iPad, with a Home Screen widget for Now/Next at a glance. It's currently finishing App Store review; the link above will go live the moment it's approved.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Does this work with my school's timetable, not just one specific school?</h3>
+        <p>Yes — the built-in schedule is just a starting example. Import your own via CSV (Week, Day, Period, Start, End, Subject, Teacher, Room) and PingPro runs entirely on your data.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Does it need an internet connection?</h3>
+        <p>No. Your timetable lives on your device and every notification is scheduled locally — nothing is sent anywhere.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What if macOS says it's from an "unidentified developer"?</h3>
+        <p>Shouldn't happen via the Mac App Store — Apple handles installation and verification automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 PingPro. Built for one school's bell schedule, works for yours too.</span>
+    <a href="mailto:hello@pingpro.app">hello@pingpro.app</a>
+  </footer>
+</main>
+
+<script>
+  (function () {
+    var el = document.getElementById('countdown');
+    if (!el) return;
+    var seconds = 12 * 60 + 47;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return;
+    setInterval(function () {
+      seconds = seconds > 0 ? seconds - 1 : 0;
+      var m = Math.floor(seconds / 60);
+      var s = seconds % 60;
+      el.textContent = m + 'm ' + (s < 10 ? '0' : '') + s + 's';
+    }, 1000);
+  })();
+
+  var buyButton = document.getElementById('tip-button');
+  if (buyButton) {
+    buyButton.addEventListener('click', function (e) {
+      e.preventDefault();
+      var originalText = buyButton.textContent;
+      buyButton.textContent = 'Redirecting…';
+      buyButton.style.pointerEvents = 'none';
+
+      fetch('https://ping-pro.vedazad28.workers.dev', { method: 'POST' })
+        .then(function (res) {
+          if (!res.ok) throw new Error('bad response');
+          return res.json();
+        })
+        .then(function (data) {
+          if (!data || !data.redirect_url) throw new Error('missing redirect_url');
+          window.location.href = data.redirect_url;
+        })
+        .catch(function () {
+          // Fall back to the static payment link if the Worker is ever unreachable,
+          // so a checkout is always possible even without the automatic redirect.
+          window.location.href = buyButton.getAttribute('data-fallback');
+        });
+    });
+  }
+</script>
+
+</body></html>
